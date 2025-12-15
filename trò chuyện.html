@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Online</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; }
+    #chat { width: 400px; margin: auto; background: #fff; padding: 10px; }
+    #messages { height: 300px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px; }
+    input { width: 100%; padding: 8px; }
+    button { width: 100%; padding: 8px; }
+  </style>
+</head>
+<body>
+
+<div id="chat">
+  <h2>Chat Online</h2>
+  <div id="messages"></div>
+  <input id="name" placeholder="Tên của bạn">
+  <input id="message" placeholder="Nhập tin nhắn">
+  <button onclick="sendMessage()">Gửi</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database().ref("messages");
+
+  function sendMessage() {
+    const name = document.getElementById("name").value;
+    const msg = document.getElementById("message").value;
+    if (name && msg) {
+      db.push({ name, msg });
+      document.getElementById("message").value = "";
+    }
+  }
+
+  db.on("child_added", function(snapshot) {
+    const data = snapshot.val();
+    const div = document.createElement("div");
+    div.textContent = data.name + ": " + data.msg;
+    document.getElementById("messages").appendChild(div);
+  });
+</script>
+
+</body>
+</html>
